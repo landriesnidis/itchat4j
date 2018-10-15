@@ -48,6 +48,7 @@ public class BaseMsg implements Serializable {
 	private String statusNotifyUserName;
 	/** 消息发送者ID **/
 	private String fromUserName;
+	private String fromGroupMember;
 	private String oriContent;
 	private String fileSize;
 
@@ -290,4 +291,13 @@ public class BaseMsg implements Serializable {
 	public void setFileSize(String fileSize) {
 		this.fileSize = fileSize;
 	}
+
+	public String getFromGroupMember() {
+		return fromGroupMember;
+	}
+
+	public void setFromGroupMember(String fromGroupMember) {
+		this.fromGroupMember = fromGroupMember;
+	}
+	
 }

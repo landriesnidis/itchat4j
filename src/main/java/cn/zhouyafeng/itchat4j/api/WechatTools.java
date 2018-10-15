@@ -44,6 +44,14 @@ public class WechatTools {
 	public static void sendMsgByUserName(String msg, String toUserName) {
 		MessageTools.sendMsgById(msg, toUserName);
 	}
+	
+	/**
+	 * 获取当前用户信息
+	 * @return
+	 */
+	public static JSONObject getUserSelfInfo(){
+		return core.getUserSelf();
+	}
 
 	/**
 	 * <p>

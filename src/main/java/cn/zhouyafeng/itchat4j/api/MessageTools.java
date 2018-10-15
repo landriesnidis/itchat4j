@@ -58,7 +58,7 @@ public class MessageTools {
 		if (text == null) {
 			return;
 		}
-		LOG.info(String.format("发送消息 %s: %s", toUserName, text));
+		// LOG.info(String.format("发送消息 %s: %s", toUserName, text));
 		webWxSendMsg(1, text, toUserName);
 	}
 

@@ -33,7 +33,7 @@ public class AssistTools {
 		Call call = client.newCall(request);
 		try {
 			Response response = call.execute();
-			System.out.println(response.body().string());
+			//System.out.println(response.body().string());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

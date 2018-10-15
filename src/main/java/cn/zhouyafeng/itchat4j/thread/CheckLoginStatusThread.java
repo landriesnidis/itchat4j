@@ -3,6 +3,7 @@ package cn.zhouyafeng.itchat4j.thread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.zhouyafeng.itchat4j.controller.IWechatStateCallBack;
 import cn.zhouyafeng.itchat4j.core.Core;
 import cn.zhouyafeng.itchat4j.utils.SleepUtils;
 
@@ -22,14 +23,22 @@ import cn.zhouyafeng.itchat4j.utils.SleepUtils;
 public class CheckLoginStatusThread implements Runnable {
 	private static Logger LOG = LoggerFactory.getLogger(CheckLoginStatusThread.class);
 	private Core core = Core.getInstance();
-
+	private IWechatStateCallBack callBack;
+	
+	public CheckLoginStatusThread(IWechatStateCallBack wechatStateCallBack) {
+		callBack = wechatStateCallBack;
+	}
+	
 	@Override
 	public void run() {
 		while (core.isAlive()) {
 			long t1 = System.currentTimeMillis(); // 秒为单位
 			if (t1 - core.getLastNormalRetcodeTime() > 60 * 1000) { // 超过60秒，判为离线
 				core.setAlive(false);
+				
+				// TODO 微信离线
 				LOG.info("微信已离线");
+				if(callBack!=null)callBack.onExit();
 			}
 			SleepUtils.sleep(10 * 1000); // 休眠10秒
 		}

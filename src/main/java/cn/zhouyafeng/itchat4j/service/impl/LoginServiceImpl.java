@@ -58,8 +58,10 @@ public class LoginServiceImpl implements ILoginService {
 
 	private MyHttpClient myHttpClient = core.getMyHttpClient();
 
+	public static LoginServiceImpl impl = null;
+	
 	public LoginServiceImpl() {
-
+		impl = this;
 	}
 
 	@Override
@@ -251,7 +253,7 @@ public class LoginServiceImpl implements ILoginService {
 				while (core.isAlive()) {
 					try {
 						Map<String, String> resultMap = syncCheck();
-						LOG.info(JSONObject.toJSONString(resultMap));
+						//LOG.info(JSONObject.toJSONString(resultMap));
 						String retcode = resultMap.get("retcode");
 						String selector = resultMap.get("selector");
 						if (retcode.equals(RetCodeEnum.UNKOWN.getCode())) {
@@ -373,6 +375,15 @@ public class LoginServiceImpl implements ILoginService {
 				member.addAll(fullFriendsJsonList.getJSONArray(StorageLoginInfoEnum.MemberList.getKey()));
 			}
 			core.setMemberCount(member.size());
+			
+			//清空缓存列表
+//			core.getPublicUsersList().clear();
+//			core.getSpecialUsersList().clear();
+//			core.getGroupIdList().clear();
+//			core.getGroupNickNameList().clear();
+//			core.getGroupList().clear();
+//			core.getContactList().clear();
+			
 			for (Iterator<?> iterator = member.iterator(); iterator.hasNext();) {
 				JSONObject o = (JSONObject) iterator.next();
 				if ((o.getInteger("VerifyFlag") & 8) != 0) { // 公众号/服务号

@@ -38,6 +38,9 @@ public class MsgCenter {
 	 * @return
 	 */
 	public static JSONArray produceMsg(JSONArray msgList) {
+		
+		//System.out.println(msgList.toString());
+		
 		JSONArray result = new JSONArray();
 		for (int i = 0; i < msgList.size(); i++) {
 			JSONObject msg = new JSONObject();
@@ -53,9 +56,12 @@ public class MsgCenter {
 				}
 				// 群消息与普通消息不同的是在其消息体（Content）中会包含发送者id及":<br/>"消息，这里需要处理一下，去掉多余信息，只保留消息内容
 				if (m.getString("Content").contains("<br/>")) {
+					String member = m.getString("Content").substring(0,m.getString("Content").indexOf(":"));
 					String content = m.getString("Content").substring(m.getString("Content").indexOf("<br/>") + 5);
-					m.put("Content", content);
+					m.put("Content", content.replace("<br/>", "\n"));
 					m.put("groupMsg", true);
+					m.put("fromGroupMember", member);
+					
 				}
 			} else {
 				CommonTools.msgFormatter(m, "Content");
@@ -106,7 +112,8 @@ public class MsgCenter {
 			} else {
 				LOG.info("Useless msg");
 			}
-			LOG.info("收到消息一条，来自: " + m.getString("FromUserName"));
+			// TODO 
+			// LOG.info("收到消息一条，来自: " + m.getString("FromUserName"));
 			result.add(m);
 		}
 		return result;
@@ -130,7 +137,6 @@ public class MsgCenter {
 								String result = msgHandler.textMsgHandle(msg);
 								MessageTools.sendMsgById(result, core.getMsgList().get(0).getFromUserName());
 							} else if (msg.getType().equals(MsgTypeEnum.PIC.getType())) {
-
 								String result = msgHandler.picMsgHandle(msg);
 								MessageTools.sendMsgById(result, core.getMsgList().get(0).getFromUserName());
 							} else if (msg.getType().equals(MsgTypeEnum.VOICE.getType())) {

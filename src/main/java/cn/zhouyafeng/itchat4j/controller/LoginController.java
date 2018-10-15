@@ -24,6 +24,12 @@ public class LoginController {
 	private ILoginService loginService = new LoginServiceImpl();
 	private static Core core = Core.getInstance();
 
+	private IWechatStateCallBack wechatStateCallBack;
+	public LoginController(IWechatStateCallBack cb) {
+		wechatStateCallBack = cb;
+	}
+	public LoginController() {}
+	
 	public void login(String qrPath) {
 		if (core.isAlive()) { // 已登陆
 			LOG.info("itchat4j已登陆");
@@ -41,9 +47,11 @@ public class LoginController {
 				}
 				LOG.info("2. 获取登陆二维码图片");
 				if (loginService.getQR(qrPath)) {
+					if(wechatStateCallBack!=null)wechatStateCallBack.onGotLoginQRCodePicSuccessful(qrPath);
 					break;
 				} else if (count == 10) {
 					LOG.error("2.2. 获取登陆二维码图片失败，系统退出");
+					if(wechatStateCallBack!=null)wechatStateCallBack.onGotLoginQRCodePicFailed();
 					System.exit(0);
 				}
 			}
@@ -52,9 +60,11 @@ public class LoginController {
 				loginService.login();
 				core.setAlive(true);
 				LOG.info(("登陆成功"));
+				if(wechatStateCallBack!=null)wechatStateCallBack.onLoginSuccessful();
 				break;
 			}
 			LOG.info("4. 登陆超时，请重新扫描二维码图片");
+			if(wechatStateCallBack!=null)wechatStateCallBack.onLoginTimeout();
 		}
 
 		LOG.info("5. 登陆成功，微信初始化");
@@ -66,9 +76,9 @@ public class LoginController {
 		LOG.info("6. 开启微信状态通知");
 		loginService.wxStatusNotify();
 
-		LOG.info("7. 清除。。。。");
+		LOG.info("7. 清除...");
 		CommonTools.clearScreen();
-		LOG.info(String.format("欢迎回来， %s", core.getNickName()));
+		LOG.info(String.format("当前登录用户： %s", core.getNickName()));
 
 		LOG.info("8. 开始接收消息");
 		loginService.startReceiving();
@@ -82,7 +92,7 @@ public class LoginController {
 		LOG.info("11. 缓存本次登陆好友相关消息");
 		WechatTools.setUserInfo(); // 登陆成功后缓存本次登陆好友相关消息（NickName, UserName）
 
-		LOG.info("12.开启微信状态检测线程");
-		new Thread(new CheckLoginStatusThread()).start();
+		LOG.info("12. 开启微信状态检测线程");
+		new Thread(new CheckLoginStatusThread(wechatStateCallBack)).start();
 	}
 }
